@@ -105,14 +105,13 @@ class Minesweeper():
             pyautogui.moveTo(mute_x, mute_y, 0.5)
             pyautogui.click()
         except:
-            print("Mute sound button not found! (might be already mute)")
+            print("Mute sound button not found! (might be already muted)")
         self.mute = False
 
 
     def setDifficulty(self):
         if self.difficulty not in [0, 1, 2]:
-            print("Difficulty must be 0 (easy), 1 (normal) or 2 (hard)!")
-            return
+            raise ValueError("Difficulty must be 0 (easy), 1 (normal) or 2 (hard)!")
         try:
             configButton = pyautogui.locateOnScreen(self.configImage, confidence=0.9)
             config_x = pyautogui.center(configButton).x
@@ -127,7 +126,7 @@ class Minesweeper():
                 pyautogui.moveTo(config_x, config_y + 75, 0.5)
             pyautogui.click()
         except:
-            print("Flag image not found!")
+            raise Exception("Flag image not found!")
 
 
     def getScore(self, image):
@@ -336,7 +335,7 @@ class Minesweeper():
         self.gameWindow = self.getGameWindow()
         self.initializeCells()
         self.start()
-        time.sleep(self.speed)
+        time.sleep(0.85)
 
         self.updateCells()
         # self.updateCells()    # remove false positive
@@ -361,13 +360,15 @@ class Minesweeper():
             self.updateCells()
             # self.updateCells()
             # self.showGrid()
+        print("I won!")
+        return
 
 
 
 if __name__ == "__main__":
     difficulty = 1    # normal difficulty
     mute = True    # mute sound
-    speed = 0.85    # Time between each move
+    speed = 0.15    # time between each move
     minesweeper = Minesweeper(difficulty, mute, speed)
     minesweeper.play()
 

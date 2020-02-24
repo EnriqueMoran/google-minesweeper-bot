@@ -53,5 +53,5 @@ On v1.0 performance depends on speed parameter that set the time the script will
 
 ## TODO
 
-..* Add multiple secure moves (click on all secure unwknown cells without taking multiple screenshots).
-..* Check closer cells to last clicked instead of starting from (0, 0).
+* Add multiple secure moves (click on all secure unwknown cells without taking multiple screenshots).
+* Check closer cells to last clicked instead of starting from (0, 0).

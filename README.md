@@ -52,6 +52,16 @@ On v1.0 performance depends on speed parameter that set the time the script will
 | 0.15  | 10       | 9/1             | 10/0              | 2/8             | 27.2           | 214.66           | 812.5          |
 
 
+On v1.2, opencv2 template matching is no longer used. The scores are obtained from their pixels color. Speed performance has been improved on easy and normal difficulties.
+Adding rules to apply when have to randomly click is needed.
+
+| Speed | Nº Games | Easy win/defeat | Normal win/defeat | Hard win/defeat | Easy Avg. Time | Normal Avg. Time | Hard Avg. Time |
+|-------|----------|-----------------|-------------------|-----------------|----------------|------------------|----------------|
+| 0.015 | 10       | 8/2             | 4/6               | 0/10            | 11.25          | 42               | -              |
+| 0.05  | 10       | 7/3             | 5/5               | 1/9             | 11.28          | 44.6             | 113            |
+
+
+
 ## TODO
 
 * Add rules for random clicks.

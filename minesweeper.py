@@ -102,7 +102,7 @@ class Minesweeper():
             muteButton = pyautogui.locateOnScreen(self.muteImage, confidence=0.9)
             mute_x = pyautogui.center(muteButton).x
             mute_y = pyautogui.center(muteButton).y
-            pyautogui.moveTo(mute_x, mute_y, 0.5)
+            pyautogui.moveTo(mute_x, mute_y, 0.2)
             pyautogui.click()
         except:
             print("Mute sound button not found! (might be already muted)")
@@ -116,7 +116,7 @@ class Minesweeper():
             configButton = pyautogui.locateOnScreen(self.configImage, confidence=0.9)
             config_x = pyautogui.center(configButton).x
             config_y = pyautogui.center(configButton).y
-            pyautogui.moveTo(config_x, config_y, 0.5)
+            pyautogui.moveTo(config_x, config_y, 0.2)
             pyautogui.click()
             if self.difficulty == 0:    # easy
                 pyautogui.moveTo(config_x, config_y + 25, 0.5)
@@ -145,7 +145,40 @@ class Minesweeper():
             if confidence > 0.75 and confidence > resConfidence:
                 resConfidence = confidence
                 res = cont
-        return res
+        return res    
+
+
+    def getColor(self, color):
+        r, g, b = color
+        if 20 <= r <= 35:    # check blue color
+            if 115 <= g <= 130:
+                if 205 <= b <= 220:
+                    return 1
+        if 50 <= r <= 65:    # check green color
+            if 135 <= g <= 150:
+                if 55 <= b <= 70:
+                    return 2
+        if 205 <= r <= 220:    # check red color
+            if 40 <= g <= 55:
+                if 40 <= b <= 55:
+                    return 3
+        if 120 <= r <= 135:    # check purple color
+            if 25 <= g <= 30:
+                if 155 <= b <= 170:
+                    return 4
+        if 240 <= r <= 255:    # check orange color
+            if 135 <= g <= 150:
+                if 0 <= b <= 15:
+                    return 5
+        if 240 <= r <= 255:    # check orange color
+            if 135 <= g <= 150:
+                if 0 <= b <= 15:
+                    return 5
+        if 0 <= r <= 15:    # check blue color
+            if 145 <= g <= 160:
+                if 160 <= b <= 175:
+                    return 6
+        return 0    # No match
 
 
     def updateCells(self):
@@ -157,16 +190,20 @@ class Minesweeper():
 
         for row in range(self.rows):
             for col in range(self.cols):
-                x = x0 + (row * self.size)
-                y = y0 + (col * self.size)
-                color = screenshot.getpixel((int(y) + thr, int(x) + thr))
-                if color not in [(162, 209, 73), (170, 215, 81)] and color in [(229, 194, 159), (215, 184, 153), (236, 209, 183), (225, 202, 179)]:    # if its not an unknown cell
-                    image = np.array(screenshot)
-                    image = image[int(x):int(x + self.size), int(y):int(y + self.size)]
-                    score = self.getScore(image)
-                    if self.cells[(col, row)][1] == 'F':
+                x = x0 + (row * self.size + self.size / 2)
+                y = y0 + (col * self.size + self.size / 2)
+
+                x1 = x0 + (row * self.size + thr)
+                y1 = y0 + (col * self.size + thr)
+
+                if self.cells[(col, row)][1] == 'F':
                         pass
-                    else:
+                elif screenshot.getpixel((int(y1), int(x1))) not in [(162, 209, 73), (170, 215, 81)]:    # not an unkwnown cell
+                    if screenshot.getpixel((int(y1), int(x1))) in [(229, 194, 159), (215, 184, 153), (236, 209, 183), (225, 202, 179)]:    # not a green cell
+                        colors = [screenshot.getpixel((int(y) - thy, int(x) - thx)) for thy in range(-4, 4) for thx in range(-4, 4)]
+                        scores = [self.getColor(color) for color in colors]
+                        scores.sort(reverse=True)
+                        score = scores[0]
                         self.cells[(col, row)] = [(y + self.size / 2, x + self.size / 2), score]
 
 
@@ -298,7 +335,7 @@ class Minesweeper():
 
     def placeFlag(self, cell):
         x, y = self.cells[(cell[0], cell[1])][0]
-        pyautogui.moveTo(y, x, 0.1)
+        pyautogui.moveTo(y, x)
         pyautogui.click(button='right')
         self.cells[(cell[0], cell[1])][1] = 'F'
 
@@ -318,7 +355,7 @@ class Minesweeper():
         unknownCells = {cell: value[0] for cell, value in self.cells.items() if value[1] == '?'}
         cell = random.choice(list(unknownCells.keys()))
         x, y = self.cells[cell][0][0], self.cells[cell][0][1]
-        pyautogui.moveTo(y, x, 0.1)
+        pyautogui.moveTo(y, x)
         pyautogui.click()
         print("random!")
         return cell
@@ -341,6 +378,7 @@ class Minesweeper():
 
 
     def play(self):    # game loop
+        print("To stop this script place the mouse on top-left corner of the screen.")
         if self.mute:
             self.muteSound()
         self.setDifficulty()
@@ -366,7 +404,7 @@ class Minesweeper():
             elif click == 1:
                 for cell in cells:
                     x, y = self.cells[(cell[0], cell[1])][0]
-                    pyautogui.moveTo(y, x, 0.1)
+                    pyautogui.moveTo(y, x)
                     pyautogui.click()
                     lastCell = cell
             elif click == 2:    # click random cell
@@ -387,7 +425,7 @@ class Minesweeper():
 if __name__ == "__main__":
     difficulty = 1    # normal difficulty
     mute = True    # mute sound
-    speed = 0.15    # time between each move
+    speed = 0.05    # time between each move
     minesweeper = Minesweeper(difficulty, mute, speed)
     minesweeper.play()
 

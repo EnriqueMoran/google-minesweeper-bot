@@ -18,7 +18,7 @@ pip install pyautogui opencv-python numpy
 Once the installation is complete, right click on minesweeper.py file and edit it with IDLE.
 Open google minesweeper game and make sure the game window is completely visible, then click on python IDLE and press F5.
 
-Note:*The first time you run the script will open a new windows that might be placed over game window, just move out and resize it.*
+Note: *The first time you run the script will open a new windows that might be placed over game window, just move out and resize it.*
 
 **Important:** If you need to abort the execution of the script, place the mouse on top-left corner of your screen.
 
@@ -51,7 +51,7 @@ On v1.0 performance depends on speed parameter that set the time the script will
 | 0.10  | 10       | 8/2             | 8/2               | 0/10            | 28.875         | 235.83           | -              |
 | 0.15  | 10       | 9/1             | 10/0              | 2/8             | 27.2           | 214.66           | 812.5          |
 
+
 ## TODO
 
-* Add multiple secure moves (click on all secure unwknown cells without taking multiple screenshots).
-* Check closer cells to last clicked instead of starting from (0, 0).
+* Add rules for random clicks.

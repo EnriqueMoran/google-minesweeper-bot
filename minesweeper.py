@@ -260,9 +260,14 @@ class Minesweeper():
         return res
 
 
-    def selectCell(self):
-        for row in range(self.rows):
-            for col in range(self.cols):
+    def selectCell(self, lastCell):
+        col, th_x = lastCell[0], lastCell[0]
+        row, th_y = lastCell[1], lastCell[1]
+        dx = 0
+        dy = -1
+        cont = 0    # cells checked (in board)
+        while cont < self.rows * self.cols:
+            if col < self.cols and row < self.rows and col >= 0 and row >= 0:
                 score = self.cells[(col, row)][1]
                 if score != 0 and score != 'F':
                     try:
@@ -270,11 +275,17 @@ class Minesweeper():
                         flaggeds = self.getFlags(col, row)
                         # print((col, row), score, len(neighbors), len(flaggeds))    # debug
                         if len(flaggeds) < int(score) and len(neighbors) + len(flaggeds) <= int(score):
-                            return (neighbors[0], 0)    # select cell to place flag
+                            return (neighbors, 0)    # select cells to place flag
                         elif len(flaggeds) == int(score) and len(neighbors) > 0:
-                            return (neighbors[0], 1)    # select cell to click
+                            return (neighbors, 1)    # select cells to click
                     except:
                         pass
+                cont += 1
+            col -= th_x
+            row -= th_y
+            if col == row or (col < 0 and col == -row) or (col > 0 and col == 1 - row):
+                dx, dy = -dy, dx
+            col, row = col + dx + th_x, row + dy + th_y
         return (None, 2)    # select random cell to click
 
 
@@ -305,10 +316,12 @@ class Minesweeper():
 
     def randomCell(self):    # click on random unknown cell
         unknownCells = {cell: value[0] for cell, value in self.cells.items() if value[1] == '?'}
-        x, y = random.choice(list(unknownCells.values()))
+        cell = random.choice(list(unknownCells.keys()))
+        x, y = self.cells[cell][0][0], self.cells[cell][0][1]
         pyautogui.moveTo(y, x, 0.1)
         pyautogui.click()
         print("random!")
+        return cell
         
     
     def checkLose(self, nBombs):
@@ -341,17 +354,23 @@ class Minesweeper():
         # self.updateCells()    # remove false positive
         # self.showGrid()
 
+        lastCell = (0, 0)    # last clicked cell
+
         while self.nBombs >= 0:   
-            cell, click = self.selectCell()
+            cells, click = self.selectCell(lastCell)
             if click == 0:
-                self.placeFlag(cell)
-                self.nBombs -= 1
+                for cell in cells:
+                    self.placeFlag(cell)
+                    self.nBombs -= 1
+                    lastCell = cell
             elif click == 1:
-                x, y = self.cells[(cell[0], cell[1])][0]
-                pyautogui.moveTo(y, x, 0.1)
-                pyautogui.click()
+                for cell in cells:
+                    x, y = self.cells[(cell[0], cell[1])][0]
+                    pyautogui.moveTo(y, x, 0.1)
+                    pyautogui.click()
+                    lastCell = cell
             elif click == 2:    # click random cell
-                self.randomCell()
+                lastCell = self.randomCell()
             if self.checkLose(self.nBombs):
                 print("I lose")
                 break
